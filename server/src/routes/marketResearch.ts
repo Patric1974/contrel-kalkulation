@@ -37,9 +37,9 @@ router.post('/', async (req, res) => {
         'anthropic-beta': 'web-search-2025-03-05',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 2048,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
+        tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }],
         messages: [{ role: 'user', content: prompt }],
       }),
     });
@@ -98,36 +98,15 @@ function buildPrompt(
     : '';
   const ersatzLine = ersatztyp ? `\nALTERNATIVE / ERSATZTYP: ${ersatztyp}` : '';
 
-  return `Du bist ein Preisrecherche-Assistent für Contrel AG, ein Schweizer B2B-Händler für Batterien, Akkus und Ladegeräte.
+  return `Marktpreisrecherche für Contrel AG (Schweizer Batteriehändler B2B).
 
-Recherchiere die aktuellen Marktpreise für folgendes Produkt im Schweizer und deutschen Onlinehandel:
+PRODUKT: ${suchbegriff}${ersatzLine}${vkLine}
+EUR/CHF: ${eurChfKurs}
 
-ARTIKEL: ${suchbegriff}${ersatzLine}${vkLine}
-EUR/CHF KURS: ${eurChfKurs}
+Suche Preise bei: Galaxus.ch, Toppreise.ch, Amazon.de, Batteryworld.de, Batterieexperte.de, Conrad.de.
+Netto-Preise bevorzugen. EUR×${eurChfKurs}=CHF. Bei nicht verfügbar: kompatible Alternativen suchen.
 
-AUFGABE:
-Durchsuche folgende Online-Händler in dieser Reihenfolge:
-
-Priorität A (Schweiz, bevorzugt – Preise direkt in CHF):
-- Galaxus.ch / Digitec.ch
-- Toppreise.ch (Preisvergleich Schweiz)
-- Ricardo.ch
-
-Priorität B (Deutschland – EUR mit Kurs ${eurChfKurs} in CHF umrechnen):
-- Amazon.de
-- Batteryworld.de
-- Batterieexperte.de
-- Conrad.de
-- Voelkner.de
-- Reichelt.de
-- Jakob-elektronik.de
-
-WICHTIG:
-- Suche nach dem Originalprodukt; bei Nichtverfügbarkeit nach kompatiblen Alternativen
-- Netto-Preise (exkl. MWST) bevorzugen wo angegeben
-- B2B-/Staffelpreise berücksichtigen falls verfügbar
-
-Antworte AUSSCHLIESSLICH mit folgendem JSON-Objekt – kein Text davor oder danach:
+Antworte NUR mit diesem JSON:
 {
   "tiefstpreis_chf": <günstigstes Angebot netto CHF oder null>,
   "durchschnitt_chf": <Durchschnitt aller Preise netto CHF oder null>,
