@@ -37,7 +37,7 @@ export function ArticleListView({ articles, onEditArticle, onUpdateArticle, read
   return (
     <div className="space-y-3">
       {/* Toolbar */}
-      <div className="flex items-center justify-between flex-wrap gap-2">
+      <div className="flex items-center justify-between flex-wrap gap-2 print:hidden">
         <span className="text-sm text-gray-500 font-medium">{articles.length} Artikel</span>
         <div className="flex items-center gap-2">
           <span className="text-xs text-gray-500">Preisansicht:</span>
@@ -149,7 +149,8 @@ export function ArticleListView({ articles, onEditArticle, onUpdateArticle, read
               const fk2e = calculatePrice(article.purchasePrice, bt[1]?.markup ?? 40, veg, false);
               const fk3e = calculatePrice(article.purchasePrice, bt[2]?.markup ?? 25, veg, false);
 
-              const signal = marketAvg ? getPriceSignal(sw1i, marketAvg) : null;
+              const aiAmpel = article.marktpreis?.ampel ?? null;
+              const signal = !aiAmpel && marketAvg ? getPriceSignal(sw1i, marketAvg) : null;
               const isHighlighted = highlight === idx;
               const na = <span className="text-gray-300">0,00</span>;
 
@@ -224,7 +225,18 @@ export function ArticleListView({ articles, onEditArticle, onUpdateArticle, read
                       <td className="px-2 py-2 text-right font-mono font-bold text-blue-900">
                         {hasPrice ? (
                           <span className="flex items-center justify-end gap-1">
-                            {signal && <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${signal === 'green' ? 'bg-green-500' : signal === 'yellow' ? 'bg-yellow-500' : 'bg-red-500'}`} />}
+                            {(aiAmpel || signal) && (
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                              aiAmpel === 'gruen' ? 'bg-green-500' :
+                              aiAmpel === 'gelb' ? 'bg-yellow-500' :
+                              aiAmpel === 'rot' ? 'bg-red-500' :
+                              signal === 'green' ? 'bg-green-500' :
+                              signal === 'yellow' ? 'bg-yellow-500' : 'bg-red-500'
+                            }`}
+                            title={aiAmpel ? `KI-Marktanalyse: ${aiAmpel} (Stand ${article.marktpreis?.recherche_datum})` : `Marktvergleich: ${signal}`}
+                          />
+                        )}
                             {chf(sw1i)}
                           </span>
                         ) : na}

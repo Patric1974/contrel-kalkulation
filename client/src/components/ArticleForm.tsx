@@ -3,6 +3,7 @@ import type { Article, PriceTier } from '../types';
 import { VegAssistant } from './VegAssistant';
 import { PriceTable } from './PriceTable';
 import { MarketPrices } from './MarketPrices';
+import { calculatePrice } from '../utils/pricing';
 
 interface ArticleFormProps {
   article: Article;
@@ -209,6 +210,18 @@ export function ArticleForm({ article, index, onChange, onRemove, readOnly = fal
                   readOnly={readOnly}
                   articleName={article.name}
                   articleNumber={article.articleNumber}
+                  marktpreis={article.marktpreis}
+                  onMarktpreisChange={m => update({ marktpreis: m })}
+                  currentVkChf={
+                    article.purchasePrice > 0
+                      ? calculatePrice(
+                          article.purchasePrice,
+                          article.windowPriceCategory.tiers[0]?.markup ?? 80,
+                          article.vegAmount ?? 0,
+                          true,
+                        )
+                      : undefined
+                  }
                 />
               </div>
             </div>

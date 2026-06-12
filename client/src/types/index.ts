@@ -53,6 +53,32 @@ export interface MarketPrice {
   price: number;
 }
 
+export type AmpelStatus = 'gruen' | 'gelb' | 'rot' | 'unbekannt';
+
+export interface MarktpreisAnbieterErgebnis {
+  name: string;
+  preis_netto_chf: number | null;
+  verfuegbar: boolean;
+  ursprung: 'CHF' | 'EUR';
+  preis_original: number | null;
+  prioritaet: 'A' | 'B';
+  hinweis?: string;
+}
+
+export interface MarktpreisErgebnis {
+  tiefstpreis_chf: number | null;
+  durchschnitt_chf: number | null;
+  marktpreis_chf: number | null;
+  premiumpreis_chf: number | null;
+  empfehlung_vk_chf: number | null;
+  ampel: AmpelStatus;
+  anbieter: MarktpreisAnbieterErgebnis[];
+  hinweis?: string;
+  recherche_datum: string;
+  suchbegriff: string;
+  eur_chf_kurs: number;
+}
+
 export interface PriceTier {
   minQty: number;
   maxQty: number | null;
@@ -80,6 +106,7 @@ export interface Article {
   businessPriceCategory: PriceCategory;
   shopPflege: boolean;   // Im Webshop eingepflegt
   erpPflege: boolean;    // Im ERP eingepflegt
+  marktpreis?: MarktpreisErgebnis;
 }
 
 export interface Calculation {

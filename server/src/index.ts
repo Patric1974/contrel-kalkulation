@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import calculationsRouter from './routes/calculations';
 import marketSearchRouter from './routes/marketSearch';
+import marketResearchRouter from './routes/marketResearch';
 import db from './db/database';
 import type { CalculationRow } from './types';
 
@@ -23,6 +24,7 @@ app.use(express.json({ limit: '10mb' }));
 // API routes
 app.use('/api/calculations', calculationsRouter);
 app.use('/api/market-search', marketSearchRouter);
+app.use('/api/market-research', marketResearchRouter);
 
 // Public share route - read only
 app.get('/share/:id', (req, res) => {
