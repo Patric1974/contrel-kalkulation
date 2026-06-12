@@ -30,7 +30,7 @@ export function MarktpreisModal({
   onClose,
 }: MarktpreisModalProps) {
   const [state, setState] = useState<ModalState>(marktpreis ? 'ergebnis' : 'eingabe');
-  const [suchbegriff, setSuchbegriff] = useState(articleNumber || articleName || '');
+  const [suchbegriff, setSuchbegriff] = useState(articleName || articleNumber || '');
   const [ersatztyp, setErsatztyp] = useState('');
   const [eurChfKurs, setEurChfKurs] = useState(0.96);
   const [ergebnis, setErgebnis] = useState<MarktpreisErgebnis | null>(marktpreis ?? null);
