@@ -1,6 +1,17 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
+import fs from 'fs';
+
+// Manuell .env laden (zuverlässiger als --env-file unter Windows/tsx)
+const envFile = path.resolve(process.cwd(), '.env');
+if (fs.existsSync(envFile)) {
+  const lines = fs.readFileSync(envFile, 'utf8').replace(/^﻿/, '').split('\n');
+  for (const line of lines) {
+    const m = line.trim().match(/^([^#][^=]*)=(.+)$/);
+    if (m) process.env[m[1].trim()] = m[2].trim();
+  }
+}
 import calculationsRouter from './routes/calculations';
 import marketSearchRouter from './routes/marketSearch';
 import marketResearchRouter from './routes/marketResearch';
