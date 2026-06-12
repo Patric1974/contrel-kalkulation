@@ -88,7 +88,9 @@ function parseRow(cols: string[], headers: string[]): ParsedRow {
     return idx >= 0 ? (cols[idx] ?? '').trim() : '';
   };
 
-  const name = get('bezeichnung') || get('name') || get('artikel');
+  const baseName = get('bezeichnung') || get('name') || get('artikel');
+  const zusatz = get('zusatzbezeichnung') || get('zusatz');
+  const name = zusatz ? `${baseName} · ${zusatz}` : baseName;
   const articleNumber = get('artikelnummer') || get('artikel-nr') || get('artnr') || get('art.nr') || get('art-nr') || get('nummer');
   const ean = get('ean');
   const priceRaw = get('einkaufspreis') || get('ek-preis') || get('ekpreis') || get('preis');
@@ -113,8 +115,8 @@ function parseRow(cols: string[], headers: string[]): ParsedRow {
   const markupB2 = getNum('firmenkunde2') || getNum('fk2') || 40;
   const markupB3 = getNum('firmenkunde3') || getNum('fk3') || 25;
 
-  const valid = name.length > 0 && purchasePrice > 0;
-  const error = !name ? 'Bezeichnung fehlt' : purchasePrice <= 0 ? 'Einkaufspreis fehlt/ungültig' : '';
+  const valid = name.length > 0;
+  const error = !name ? 'Bezeichnung fehlt' : '';
 
   return { name, articleNumber, ean, purchasePrice, batteryType, weightGrams, markupW1, markupW2, markupW3, markupB1, markupB2, markupB3, valid, error };
 }
@@ -238,8 +240,8 @@ export function ImportModal({ onClose, onImport }: ImportModalProps) {
               <div className="bg-gray-50 rounded-lg p-4">
                 <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">Erwartete Spalten (Reihenfolge egal)</p>
                 <div className="grid grid-cols-2 gap-1 text-xs text-gray-600">
-                  <div><span className="font-medium text-red-600">Bezeichnung *</span> — Produktname</div>
-                  <div><span className="font-medium text-red-600">Einkaufspreis *</span> — z.B. 1.20</div>
+                  <div><span className="font-medium text-red-600">Bezeichnung *</span> — Produktname (Pflicht)</div>
+                  <div><span className="font-medium">Einkaufspreis</span> — z.B. 1.20 (optional, nachträglich erfassbar)</div>
                   <div><span className="font-medium">Artikelnummer</span> — optional</div>
                   <div><span className="font-medium">EAN</span> — optional</div>
                   <div><span className="font-medium">Batterietyp</span> — z.B. alkali-standard</div>
@@ -247,7 +249,7 @@ export function ImportModal({ onClose, onImport }: ImportModalProps) {
                   <div><span className="font-medium">Shopkunden T1–T3 %</span> — Aufschläge</div>
                   <div><span className="font-medium">Firmenkunde T1–T3 %</span> — Aufschläge</div>
                 </div>
-                <p className="text-xs text-gray-400 mt-2">* Pflichtfelder. Batterietypen: alkali-standard, kohle-zink-standard, liion-geraet, lifepo4-industrie, blei-fahrzeug, etc.</p>
+                <p className="text-xs text-gray-400 mt-2">* Nur Bezeichnung ist Pflicht. Batterietypen: alkali-standard, kohle-zink-standard, liion-geraet, lifepo4-industrie, blei-fahrzeug, etc.</p>
               </div>
 
               {/* Dropzone */}
@@ -305,7 +307,7 @@ export function ImportModal({ onClose, onImport }: ImportModalProps) {
                         <td className="px-3 py-2 text-gray-400">{i + 1}</td>
                         <td className="px-3 py-2 font-medium text-gray-800">{row.name || <span className="text-red-400 italic">leer</span>}</td>
                         <td className="px-3 py-2 text-gray-500">{row.articleNumber || '—'}</td>
-                        <td className="px-3 py-2 text-right font-mono">{row.purchasePrice > 0 ? row.purchasePrice.toFixed(2) : <span className="text-red-400">—</span>}</td>
+                        <td className="px-3 py-2 text-right font-mono">{row.purchasePrice > 0 ? row.purchasePrice.toFixed(2) : <span className="text-gray-300">—</span>}</td>
                         <td className="px-3 py-2 text-gray-500">{row.batteryType || '—'}</td>
                         <td className="px-3 py-2 text-right text-gray-500">{row.weightGrams ?? '—'}</td>
                         <td className="px-3 py-2 text-center">
